@@ -46,3 +46,37 @@ JOIN clientes c
 --Consulta para verificar el resultado
 SELECT *
 FROM analitica.clientes;
+
+--Separación de funciones
+--Objetivo: Que el rol analista pueda consultar los datos seudonimizados,
+--pero no la tabla que permite identificar a los clientes
+
+--Crea el rol analista sin login propio
+CREATE ROLE analista NOLOGIN;
+
+--Dar acceso al conjunto de datos analiticos
+GRANT USAGE
+ON SCHEMA analitica
+TO analista;
+
+GRANT SELECT
+ON analitica.clientes
+TO analista;
+
+--Se toma el rol de analista
+SET ROLE analista;
+
+--Consulta para probar que se le permite al rol acceder a analitica.clientes
+SELECT *
+FROM analitica.clientes;
+
+--Consulta rechazada sobre pii.mapa_cliente
+SELECT *
+FROM pii.mapa_cliente;
+
+--Consulta rechazada sobre public.clientes
+SELECT *
+FROM public.clientes;
+
+--Regresar al rol anterior
+RESET ROLE;
